@@ -12,6 +12,8 @@ import MyApplications from './pages/student/MyApplications'
 import Applicants from './pages/stream/Applicants'
 import StreamHome from './pages/stream/StreamHome'
 import StreamLayout from './pages/stream/StreamLayout'
+import CoordinatorLayout from './pages/pc/CoordinatorLayout'
+import ApplicationsReview from './pages/pc/ApplicationsReview'
 function App() {
 
   return (
@@ -52,6 +54,10 @@ function App() {
      <Route index element={<StreamHome />} />
     <Route path="applicants" element={<Applicants />} />
     </Route>
+
+<Route path="/coordinator" element={<CoordinatorLayout />}>
+  <Route index element={<ApplicationsReview />} />
+</Route>
     </Routes>
   )
 }
