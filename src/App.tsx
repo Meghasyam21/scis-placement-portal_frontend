@@ -4,7 +4,6 @@ import Register from './pages/Register'
 import './App.css'
 import StudentDashboard from './pages/student/StudentDashboard'
 import StreamDashboard from './pages/StreamDashboard'
-import PlacementDashboard from './pages/PlacementDashboard'
 import OfficerDashboard from './pages/OfficerDashboard'
 import Layout from './components/Layout'
 import StudentProfile from './pages/student/StudentProfile'
@@ -21,7 +20,6 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/stream" element={<StreamDashboard />} />
-      <Route path="/placement" element={<PlacementDashboard />} />
       <Route path="/officer" element={<OfficerDashboard />} />
 
       <Route
