@@ -20,6 +20,10 @@ const StreamSidebar = () => {
         Applicants
       </button>
 
+      <button onClick={() => navigate("/stream/students")} style={styles.link}>
+       Students
+      </button>
+
       <button onClick={logout} style={styles.logout}>
         Logout
       </button>
