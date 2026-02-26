@@ -9,30 +9,37 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
-    const res = await api.post("/auth/login", {
-      email,
-      password,
-    });
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
 
-    const { token, role } = res.data;
+      const { token, role } = res.data;
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", role);
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
 
-    // 🔥 Role-based redirect
-    if (role === "STUDENT") navigate("/student");
-    else if (role === "STREAM_COORDINATOR") navigate("/stream");
-    else if (role === "PLACEMENT_COORDINATOR") navigate("/placement");
-    else if (role === "PLACEMENT_OFFICER") navigate("/officer");
+      // Role-based redirect
+      if (role === "STUDENT") navigate("/student");
+      else if (role === "STREAM_COORDINATOR") navigate("/stream");
+      else if (role === "PLACEMENT_COORDINATOR") navigate("/placement");
+      else if (role === "PLACEMENT_OFFICER") navigate("/officer");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Login failed");
+    }
+  };
 
-  } catch (err: any) {
-    setError(err.response?.data?.message || "Login failed");
-  }
-};
+  // Animation keyframes (same as Register for consistency)
+  const animationStyle = `
+    @keyframes popIn {
+      0% { transform: scale(0.85) translateY(30px); opacity: 0; }
+      100% { transform: scale(1) translateY(0px); opacity: 1; }
+    }
+  `;
 
   return (
     <div style={styles.container}>
@@ -40,6 +47,7 @@ const handleLogin = async (e: React.FormEvent) => {
         <h2 style={styles.title}>SCIS Placement Login</h2>
 
         {error && <p style={styles.error}>{error}</p>}
+        <style>{animationStyle}</style>
 
         <input
           type="email"
@@ -59,16 +67,33 @@ const handleLogin = async (e: React.FormEvent) => {
           style={styles.input}
         />
 
-        <button type="submit" style={styles.button}>
+        <button
+          type="submit"
+          style={styles.button}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0px 0px 0px black";
+            e.currentTarget.style.transform = "translate(4px,4px)";
+            e.currentTarget.style.backgroundColor = "#e8e8e8";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "4px 4px 0px black";
+            e.currentTarget.style.transform = "translate(0px,0px)";
+            e.currentTarget.style.backgroundColor = "#ffffff";
+          }}
+        >
           Login
         </button>
-        <p style={{ color: "white", fontSize: "14px" }}>
-            Don't have an account?{" "}
-        <span
-            style={{ color: "#22c55e", cursor: "pointer" }}
-                onClick={() => navigate("/register")}
-                >Register
-        </span>
+
+        <p style={styles.prompt}>
+          Don't have an account?{" "}
+          <span
+            style={styles.link}
+            onClick={() => navigate("/register")}
+            onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+            onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+          >
+            Register
+          </span>
         </p>
       </form>
     </div>
@@ -78,42 +103,75 @@ const handleLogin = async (e: React.FormEvent) => {
 const styles = {
   container: {
     height: "100vh",
-    backgroundColor: "#0f172a",
+    backgroundColor: "#ffffff",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    fontFamily: "monospace",
+    overflowY: "auto" as const,
+    padding: "20px",
   },
   card: {
-    backgroundColor: "#1e293b",
-    padding: "40px",
-    borderRadius: "10px",
-    width: "320px",
+    backgroundColor: "#ffffff",
+    padding: "35px",
+    borderRadius: "18px",
+    width: "420px",
     display: "flex",
     flexDirection: "column" as const,
     gap: "15px",
+    border: "2px solid black",
+    boxShadow: "8px 8px 0px black",
+    animation: "popIn 0.4s ease-out",
   },
   title: {
-    color: "white",
-    textAlign: "center" as const,
+    color: "black",
+    fontSize: "28px",
+    fontWeight: "bold" as const,
+    marginBottom: "5px",
+    fontFamily: "monospace",
   },
   input: {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "none",
-    fontSize: "14px",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "2px solid black",
+    fontSize: "15px",
+    fontFamily: "monospace",
+    backgroundColor: "white",
+    outline: "none",
+    fontWeight: 600,
+    letterSpacing: "0.5px",
+    boxSizing: "border-box" as const,
   },
   button: {
-    padding: "10px",
-    backgroundColor: "#22c55e",
+    padding: "12px",
+    backgroundColor: "#ffffff",
     color: "black",
-    border: "none",
-    borderRadius: "6px",
+    border: "2px solid black",
+    borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "bold" as const,
+    boxShadow: "4px 4px 0px black",
+    fontSize: "15px",
+    transition: "all 0.3s cubic-bezier(.25,.8,.25,1)",
+    fontFamily: "monospace",
   },
   error: {
-    color: "#f87171",
+    color: "red",
     fontSize: "14px",
+    minHeight: "18px",
+    fontFamily: "monospace",
+  },
+  prompt: {
+    color: "black",
+    fontSize: "14px",
+    textAlign: "center" as const,
+    fontFamily: "monospace",
+  },
+  link: {
+    color: "black",
+    cursor: "pointer",
+    fontWeight: "bold" as const,
+    textDecoration: "none",
   },
 };
 

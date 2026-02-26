@@ -1,6 +1,92 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+
+const CustomSelect = ({ 
+  name, 
+  value, 
+  onChange, 
+  options, 
+  placeholder = "Select",
+  required = false,
+  style = {}
+}: { 
+  name: string;
+  value: string;
+  onChange: (name: string, value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  required?: boolean;
+  style?: React.CSSProperties;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={containerRef} style={{ position: "relative", ...style }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          ...styles.input,
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: "12px",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <span style={{ 
+          color: value ? "#000000" : "#666",
+          fontFamily: "monospace",
+          fontWeight: 600,
+        }}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </span>
+        <span style={{ 
+          transform: isOpen ? "rotate(180deg)" : "rotate(0)",
+          transition: "transform 0.2s ease",
+          fontSize: "12px",
+        }}>▼</span>
+      </div>
+
+      {isOpen && (
+        <div style={styles.dropdown}>
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(name, option.value);
+                setIsOpen(false);
+              }}
+              style={{
+                ...styles.dropdownItem,
+                backgroundColor: value === option.value ? "#f0f0f0" : "#ffffff",
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e0e0e0"}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = value === option.value ? "#f0f0f0" : "#ffffff"}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Register = () => {
   const navigate = useNavigate();
@@ -12,7 +98,6 @@ const Register = () => {
     department: "MCA",
     stream: "",
     rollNo: "",
-    cgpa: "",
     batchYear: "",
     phone: "",
   });
@@ -20,8 +105,12 @@ const Register = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,13 +120,39 @@ const Register = () => {
 
     try {
       await api.post("/auth/register", form);
-
       setSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => navigate("/"), 1500);
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
     }
   };
+
+  const departmentOptions = [
+    { value: "MCA", label: "MCA" },
+    { value: "MTECH", label: "MTECH" },
+    { value: "IMTECH", label: "IMTECH" },
+  ];
+
+  const streamOptions = [
+    { value: "CSE", label: "CSE" },
+    { value: "AI", label: "AI" },
+    { value: "IT", label: "IT" },
+  ];
+
+  const animationStyle = `
+    @keyframes popIn {
+      0% { transform: scale(0.85) translateY(30px); opacity: 0; }
+      100% { transform: scale(1) translateY(0px); opacity: 1; }
+    }
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(-8px); }
+      100% { opacity: 1; transform: translateY(0px); }
+    }
+    @keyframes dropdownFade {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  `;
 
   return (
     <div style={styles.container}>
@@ -46,31 +161,76 @@ const Register = () => {
 
         {error && <p style={styles.error}>{error}</p>}
         {success && <p style={styles.success}>{success}</p>}
+        <style>{animationStyle}</style>
 
         <input name="name" placeholder="Full Name" onChange={handleChange} required style={styles.input} />
         <input name="email" type="email" placeholder="University Email" onChange={handleChange} required style={styles.input} />
         <input name="password" type="password" placeholder="Password" onChange={handleChange} required style={styles.input} />
 
-        <select name="department" onChange={handleChange} style={styles.input}>
-          <option value="MCA">MCA</option>
-          <option value="MTECH">MTECH</option>
-        </select>
+        <CustomSelect
+          name="department"
+          value={form.department}
+          onChange={handleSelectChange}
+          options={departmentOptions}
+        />
 
         {form.department === "MTECH" && (
-          <select name="stream" onChange={handleChange} required style={styles.input}>
-            <option value="">Select Stream</option>
-            <option value="CSE">CSE</option>
-            <option value="AI">AI</option>
-            <option value="IT">IT</option>
-          </select>
+          <div style={{ animation: "fadeSlide 0.35s ease" }}>
+            <CustomSelect
+              name="stream"
+              value={form.stream}
+              onChange={handleSelectChange}
+              options={streamOptions}
+              placeholder="Select Stream"
+              required
+            />
+          </div>
         )}
 
-        <input name="rollNo" placeholder="Roll Number" onChange={handleChange} required style={styles.input} />
-        <input name="cgpa" type="number" step="0.01" placeholder="CGPA" onChange={handleChange} required style={styles.input} />
-        <input name="batchYear" type="number" placeholder="Batch Year" onChange={handleChange} required style={styles.input} />
-        <input name="phone" placeholder="Phone Number" onChange={handleChange} required style={styles.input} />
+        
+        <input
+          name="rollNo"
+          placeholder="Roll Number"
+          onChange={handleChange}
+          required
+          style={styles.input}
+        />
 
-        <button type="submit" style={styles.button}>Register</button>
+        
+        <div style={styles.row}>
+          <input
+            name="phone"
+            placeholder="Phone Number"
+            onChange={handleChange}
+            required
+            style={{ ...styles.input, flex: 1 }}
+          />
+          <input
+            name="batchYear"
+            type="number"
+            placeholder="Batch Year"
+            onChange={handleChange}
+            required
+            style={{ ...styles.input, flex: 1 }}
+          />
+        </div>
+
+        <button
+          type="submit"
+          style={styles.button}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0px 0px 0px black";
+            e.currentTarget.style.transform = "translate(4px,4px)";
+            e.currentTarget.style.backgroundColor = "#e8e8e8";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "4px 4px 0px black";
+            e.currentTarget.style.transform = "translate(0px,0px)";
+            e.currentTarget.style.backgroundColor = "#ffffff";
+          }}
+        >
+          Register
+        </button>
       </form>
     </div>
   );
@@ -78,47 +238,99 @@ const Register = () => {
 
 const styles = {
   container: {
-    minHeight: "100vh",
-    backgroundColor: "#0f172a",
+    height: "100vh",
+    backgroundColor: "#ffffff",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    fontFamily: "monospace",
+    overflowY: "auto" as const,
     padding: "20px",
   },
   card: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "#ffffff",
     padding: "30px",
-    borderRadius: "10px",
-    width: "350px",
+    borderRadius: "18px",
+    width: "420px",
+    maxHeight: "90vh",
+    overflowY: "auto" as const,
     display: "flex",
     flexDirection: "column" as const,
     gap: "12px",
+    border: "2px solid black",
+    boxShadow: "8px 8px 0px black",
+    animation: "popIn 0.4s ease-out",
   },
   title: {
-    color: "white",
-    textAlign: "center" as const,
+    color: "black",
+    fontSize: "28px",
+    fontWeight: "bold" as const,
+    fontFamily: "monospace",
   },
   input: {
-    padding: "8px",
-    borderRadius: "6px",
-    border: "none",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "2px solid black",
+    fontSize: "15px",
+    fontFamily: "monospace",
+    backgroundColor: "white",
+    outline: "none",
+    fontWeight: 600,
+    letterSpacing: "0.5px",
+    boxSizing: "border-box" as const,
+  },
+  row: {
+    display: "flex",
+    gap: "12px",
+    width: "100%",
   },
   button: {
-    padding: "10px",
-    backgroundColor: "#22c55e",
+    padding: "12px",
+    backgroundColor: "#ffffff",
     color: "black",
-    border: "none",
-    borderRadius: "6px",
-    fontWeight: "bold" as const,
+    border: "2px solid black",
+    borderRadius: "8px",
     cursor: "pointer",
+    fontWeight: "bold" as const,
+    boxShadow: "4px 4px 0px black",
+    fontSize: "15px",
+    transition: "all 0.3s cubic-bezier(.25,.8,.25,1)",
+    fontFamily: "monospace",
   },
   error: {
-    color: "#f87171",
+    color: "red",
     fontSize: "14px",
+    minHeight: "18px",
+    fontFamily: "monospace",
   },
   success: {
-    color: "#4ade80",
-    fontSize: "14px",
+    color: "green",
+    fontSize: "10px",
+    minHeight: "18px",
+    fontFamily: "monospace",
+  },
+  dropdown: {
+    position: "absolute" as const,
+    top: "calc(100% + 4px)",
+    left: 0,
+    right: 0,
+    backgroundColor: "#ffffff",
+    border: "2px solid black",
+    borderRadius: "12px",
+    boxShadow: "4px 4px 0px black",
+    zIndex: 10,
+    overflow: "hidden",
+    animation: "dropdownFade 0.2s ease",
+  },
+  dropdownItem: {
+    padding: "10px 12px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontFamily: "monospace",
+    fontWeight: 600,
+    color: "black",
+    borderBottom: "1px solid #ccc",
+    transition: "background-color 0.2s ease",
   },
 };
 
