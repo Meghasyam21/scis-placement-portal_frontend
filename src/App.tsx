@@ -1,17 +1,19 @@
 import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
-import Register from './pages/Register'
+import Register from './pages/student/Register'
 import './App.css'
 import StudentDashboard from './pages/student/StudentDashboard'
-import StreamDashboard from './pages/StreamDashboard'
-import PlacementDashboard from './pages/PlacementDashboard'
-import OfficerDashboard from './pages/OfficerDashboard'
+import StreamDashboard from './pages/stream/StreamDashboard.tsx'
 import Layout from './components/Layout'
 import StudentProfile from './pages/student/StudentProfile'
 import MyApplications from './pages/student/MyApplications'
 import Applicants from './pages/stream/Applicants'
 import StreamHome from './pages/stream/StreamHome'
 import StreamLayout from './pages/stream/StreamLayout'
+import CoordinatorLayout from './pages/pc/CoordinatorLayout'
+import ApplicationsReview from './pages/pc/ApplicationsReview'
+import CoordinatorLogin from './pages/pc/CoordinatorLogin'
+import StudentManagement from './pages/pc/StudentManagment'
 function App() {
 
   return (
@@ -19,9 +21,6 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/stream" element={<StreamDashboard />} />
-      <Route path="/placement" element={<PlacementDashboard />} />
-      <Route path="/officer" element={<OfficerDashboard />} />
-
       <Route
   path="/student"
   element={
@@ -52,6 +51,13 @@ function App() {
      <Route index element={<StreamHome />} />
     <Route path="applicants" element={<Applicants />} />
     </Route>
+
+<Route path="/coordinator" element={<CoordinatorLayout />}>
+  <Route index element={<ApplicationsReview />} />
+    <Route path="management" element={<StudentManagement />} />
+</Route>
+<Route path="/coordinator/login" element={<CoordinatorLogin />} /> 
+
     </Routes>
   )
 }

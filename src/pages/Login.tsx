@@ -33,21 +33,37 @@ const Login = () => {
     }
   };
 
-  // Animation keyframes (same as Register for consistency)
-  const animationStyle = `
+  // Combined animation and responsive styles
+  const styleTag = `
     @keyframes popIn {
       0% { transform: scale(0.85) translateY(30px); opacity: 0; }
       100% { transform: scale(1) translateY(0px); opacity: 1; }
+    }
+
+    /* Responsive styles for small devices (max-width: 480px) */
+    @media (max-width: 480px) {
+      .login-card {
+        width: 95% !important;
+        padding: 25px !important;
+      }
+      .login-title {
+        font-size: 24px !important;
+      }
+      input, .login-button {
+        font-size: 14px !important;
+        padding: 10px !important;
+      }
     }
   `;
 
   return (
     <div style={styles.container}>
-      <form onSubmit={handleLogin} style={styles.card}>
-        <h2 style={styles.title}>SCIS Placement Login</h2>
+      <form onSubmit={handleLogin} style={styles.card} className="login-card">
+        <h2 style={styles.title} className="login-title">SCIS Placement Login</h2>
 
         {error && <p style={styles.error}>{error}</p>}
-        <style>{animationStyle}</style>
+
+        <style>{styleTag}</style>
 
         <input
           type="email"
@@ -70,6 +86,7 @@ const Login = () => {
         <button
           type="submit"
           style={styles.button}
+          className="login-button"
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = "0px 0px 0px black";
             e.currentTarget.style.transform = "translate(4px,4px)";

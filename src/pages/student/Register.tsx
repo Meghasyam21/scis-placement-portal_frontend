@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import api from "../services/api";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-
 
 const CustomSelect = ({ 
   name, 
@@ -9,7 +8,7 @@ const CustomSelect = ({
   onChange, 
   options, 
   placeholder = "Select",
-  required = false,
+  // required = false,
   style = {}
 }: { 
   name: string;
@@ -38,6 +37,7 @@ const CustomSelect = ({
   return (
     <div ref={containerRef} style={{ position: "relative", ...style }}>
       <div
+        className="custom-select-trigger" // added for responsive styling
         onClick={() => setIsOpen(!isOpen)}
         style={{
           ...styles.input,
@@ -139,7 +139,8 @@ const Register = () => {
     { value: "IT", label: "IT" },
   ];
 
-  const animationStyle = `
+  // Combined keyframes and responsive styles
+  const styleTag = `
     @keyframes popIn {
       0% { transform: scale(0.85) translateY(30px); opacity: 0; }
       100% { transform: scale(1) translateY(0px); opacity: 1; }
@@ -152,16 +153,35 @@ const Register = () => {
       0% { opacity: 0; transform: translateY(-10px); }
       100% { opacity: 1; transform: translateY(0); }
     }
+
+    /* Responsive styles for small devices (max-width: 480px) */
+    @media (max-width: 480px) {
+      .form-row {
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+      .register-card {
+        width: 95% !important;
+        padding: 20px !important;
+      }
+      .register-title {
+        font-size: 24px !important;
+      }
+      input, .custom-select-trigger {
+        font-size: 14px !important;
+        padding: 10px !important;
+      }
+    }
   `;
 
   return (
     <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <h2 style={styles.title}>Student Registration</h2>
+      <form onSubmit={handleSubmit} style={styles.card} className="register-card">
+        <h2 style={styles.title} className="register-title">Student Registration</h2>
 
         {error && <p style={styles.error}>{error}</p>}
         {success && <p style={styles.success}>{success}</p>}
-        <style>{animationStyle}</style>
+        <style>{styleTag}</style>
 
         <input name="name" placeholder="Full Name" onChange={handleChange} required style={styles.input} />
         <input name="email" type="email" placeholder="University Email" onChange={handleChange} required style={styles.input} />
@@ -187,7 +207,6 @@ const Register = () => {
           </div>
         )}
 
-        
         <input
           name="rollNo"
           placeholder="Roll Number"
@@ -196,8 +215,8 @@ const Register = () => {
           style={styles.input}
         />
 
-        
-        <div style={styles.row}>
+        {/* Row for phone and batch year - will stack on small screens */}
+        <div style={styles.row} className="form-row">
           <input
             name="phone"
             placeholder="Phone Number"

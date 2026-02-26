@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const StreamSidebar = () => {
+const CoordinatorSidebar = () => {
   const navigate = useNavigate();
 
   const logout = () => {
@@ -10,18 +10,27 @@ const StreamSidebar = () => {
 
   return (
     <div style={styles.sidebar}>
-      <h2>Stream Coordinator</h2>
+      <h2>Placement Coordinator</h2>
 
-      <button onClick={() => navigate("/stream")} style={styles.link}>
-        Dashboard
+      <button
+        onClick={() => navigate("/coordinator")}
+        style={styles.link}
+      >
+        Applications Review
       </button>
 
-      <button onClick={() => navigate("/stream/applicants")} style={styles.link}>
-        Applicants
+      <button
+        onClick={() => navigate("/coordinator/records")}
+        style={styles.link}
+      >
+        Placement Records
       </button>
 
-      <button onClick={() => navigate("/stream/students")} style={styles.link}>
-       Students
+      <button
+        onClick={() => navigate("/coordinator/management")}
+        style={styles.link}
+      >
+        Student Management
       </button>
 
       <button onClick={logout} style={styles.logout}>
@@ -33,7 +42,7 @@ const StreamSidebar = () => {
 
 const styles = {
   sidebar: {
-    width: "220px",
+    width: "250px",
     backgroundColor: "#1e293b",
     padding: "20px",
     display: "flex",
@@ -42,15 +51,16 @@ const styles = {
     color: "white",
   },
   link: {
-    padding: "8px",
+    padding: "10px",
     backgroundColor: "#334155",
     border: "none",
     color: "white",
     cursor: "pointer",
+    textAlign: "left" as const,
   },
   logout: {
     marginTop: "20px",
-    padding: "8px",
+    padding: "10px",
     backgroundColor: "#ef4444",
     border: "none",
     color: "white",
@@ -58,4 +68,4 @@ const styles = {
   },
 };
 
-export default StreamSidebar;
+export default CoordinatorSidebar;
