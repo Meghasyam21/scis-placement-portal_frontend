@@ -1,0 +1,74 @@
+.landing-container {
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1580582932707-520aed937b7b")
+    no-repeat center center/cover;
+  position: relative;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* Dark overlay */
+.landing-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Navbar */
+.navbar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 50px;
+  z-index: 2;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  top: 35%;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.login-btn {
+  padding: 12px 30px;
+  font-size: 18px;
+  border: none;
+  background-color: #ffcc00;
+  color: black;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.login-btn:hover {
+  background-color: #ffaa00;
+}
